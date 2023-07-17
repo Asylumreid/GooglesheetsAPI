@@ -81,13 +81,16 @@ app.post('/update-spreadsheet', async (req, res) => {
     // Determine the next empty row
     const nextRow = values ? values.length + 1 : 2;
 
+    // Trim the values in the data array
+    const trimmedData = data.map(value => value.trim());
+
     // Update the data in the spreadsheet
     const updateResponse = await sheets.spreadsheets.values.update({
       spreadsheetId,
       range: `Sheet1!A${nextRow}`,
       valueInputOption: 'RAW',
       requestBody: {
-        values: [data],
+        values: [trimmedData],
       },
     });
 
