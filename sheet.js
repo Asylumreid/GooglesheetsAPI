@@ -1,17 +1,7 @@
 import express from 'express';
-import { google } from 'googleapis';
+import { sheets, drive } from './GooglesheetsAPI/auth.js';
 
 const app = express();
-
-// Load the service account credentials JSON file
-import credentials from '../GooglesheetsAPI/secrets.json' assert { type: 'json' };
-
-// Authenticate using the service account credentials
-const auth = new google.auth.GoogleAuth({
-  credentials,
-  scopes: ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive'],
-});
-
 app.use(express.json());
 
 app.post('/create-spreadsheet', async (req, res) => {
@@ -41,7 +31,7 @@ app.post('/create-spreadsheet', async (req, res) => {
       },
     });
 
-    // Grant access to the user at the Drive level
+    // Grant access to the user at Google Drive level
     await drive.permissions.create({
       fileId: spreadsheetId,
       requestBody: {
