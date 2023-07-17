@@ -79,7 +79,7 @@ app.post('/update-spreadsheet', async (req, res) => {
     const values = response.data.values;
 
     // Determine the next empty row
-    const nextRow = values ? values.length + 1 : 2; // Assuming the data starts from the second row (excluding headers)
+    const nextRow = values ? values.length + 1 : 2;
 
     // Update the data in the spreadsheet
     const updateResponse = await sheets.spreadsheets.values.update({
