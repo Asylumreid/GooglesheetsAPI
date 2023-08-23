@@ -154,3 +154,32 @@ app.post('/delete-content', async (req, res) => {
 app.listen(3000, () => {
   console.log('Server is running on port 3000.');
 });
+
+
+app.get('/get-data/:spreadsheetId', async (req, res) => {
+  try {
+    const { spreadsheetId } = req.params;
+
+    const sheets = google.sheets({ version: 'v4', auth });
+
+    // Get all data from the spreadsheet
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: 'Sheet1', // Change this to match your sheet name if different
+    });
+
+    const allData = response.data.values;
+
+    res.status(200).json({
+      allData,
+    });
+  } catch (error) {
+    console.error('Error retrieving all data:', error);
+    res.status(500).json({
+      error: 'An error occurred while retrieving all data.',
+    });
+  }
+});
+
+
+
