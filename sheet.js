@@ -107,6 +107,49 @@ app.post('/update-spreadsheet', async (req, res) => {
   }
 });
 
+app.post('/delete-content', async (req, res) => {
+  try {
+    const { spreadsheetId, data } = req.body;
+
+    const sheets = google.sheets({ version: 'v4', auth });
+
+    // Get the current data in the spreadsheet
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: 'Sheet1',
+    });
+    const values = response.data.values;
+
+    // Find the index of the row to be deleted based on the provided data
+    const rowIndex = values.findIndex(row => row.join('') === data.join(''));
+
+    if (rowIndex !== -1) {
+      // Calculate the range of the row to be deleted
+      const range = `Sheet1!A${rowIndex + 1}:${rowIndex + 1}`;
+
+      // Delete the row
+      const deleteResponse = await sheets.spreadsheets.values.clear({
+        spreadsheetId,
+        range,
+      });
+
+      console.log('Row deleted:', deleteResponse.data);
+
+      res.status(200).json({
+        message: 'Row deleted successfully.',
+      });
+    } else {
+      res.status(404).json({
+        error: 'Row not found for deletion.',
+      });
+    }
+  } catch (error) {
+    console.error('Error deleting row:', error);
+    res.status(500).json({
+      error: 'An error occurred while deleting the row.',
+    });
+  }
+});
 
 app.listen(3000, () => {
   console.log('Server is running on port 3000.');
